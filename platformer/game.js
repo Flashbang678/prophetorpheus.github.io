@@ -2,7 +2,9 @@ var isGameOver;
 var score;
 
 var GRAVITY = 0.3;
-var JUMP = -5;
+var JUMP = -8;
+var DIVE = -8;
+var BOOST = 15;
 
 var groundSprites;
 var GROUND_SPRITE_WIDTH = 50;
@@ -10,15 +12,22 @@ var GROUND_SPRITE_HEIGHT = 50;
 var numGroundSprites;
 
 var player;
+var playerImage;
 
 var obstacleSprites;
+
+function preload(){
+playerImage=loadImage("./spaceship.png")
+}
+
+
 
 function setup() {
     isGameOver = false;
     score = 0;
     
-    createCanvas(400, 300);
-    background(150, 200, 250);
+    createCanvas(window.innerWidth-30, window.innerHeight-40);
+    background(250, 300, 350);
     groundSprites = new Group();
     
     numGroundSprites = width/GROUND_SPRITE_WIDTH+1;
@@ -28,9 +37,11 @@ function setup() {
         groundSprites.add(groundSprite);
     }
     
-    player = createSprite(100, height-75, 50, 50);
+    player = createSprite(100, height 75, 50, 50);
     
     obstacleSprites = new Group();
+    player.addImage(playerImage);
+    player.scale=.25;
 }
 
 function draw() {
@@ -41,23 +52,21 @@ function draw() {
         text("Your score was: " + score, camera.position.x, camera.position.y - 20);
         text("Game Over! Click anywhere to restart", camera.position.x, camera.position.y);
     } else {
-        background(150, 200, 250);
-        
-        player.velocity.y = player.velocity.y + GRAVITY;
-        
-        if (groundSprites.overlap(player)) {
-            player.velocity.y = 0;
-            player.position.y = (height-50) - (player.height/2);
-        }
+        background(250, 300, 350);
         
         if (keyDown(UP_ARROW)) {
             player.velocity.y = JUMP;
         }
+        if (keyDown(DOWN_ARROW)) {
+            player.velocity.y = DIVE;
+        }
+        if (keyDown(RIGHT_ARROW)){
+            player.position.x = player.position.x + 15 + BOOST ;
+            camera.position.x = player.position.x + (width/16) + BOOST;
+        }else {player.position.x = player.position.x + 10 ;
+            camera.position.x = player.position.x + (width/16)}
         
-        player.position.x = player.position.x + 5;
-        camera.position.x = player.position.x + (width/4);
-        
-        var firstGroundSprite = groundSprites[0];
+var firstGroundSprite = groundSprites[0];
         if (firstGroundSprite.position.x <= camera.position.x - (width/2 + firstGroundSprite.width/2)) {
             groundSprites.remove(firstGroundSprite);
             firstGroundSprite.position.x = firstGroundSprite.position.x + numGroundSprites*firstGroundSprite.width;
